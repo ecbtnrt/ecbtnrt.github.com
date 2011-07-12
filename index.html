@@ -1,155 +1,231 @@
-<HTML>
-<HEAD>
-<TITLE>Xlib Programming Manual: Chapter 6: Color Management Functions</TITLE>
-</HEAD>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+lang="en" xml:lang="en">
+<head>
+<title>动态库and静态库</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2011-06-24 16:02:26 CST"/>
+<meta name="author" content="ecbtnrt"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
 
-<BODY>
-<H1 ALIGN=center>Chapter 6: Color Management Functions</H1>
+<h1 class="title">动态库and静态库</h1>
 
-Each X window always has an associated colormap that
-provides a level of indirection between pixel values and colors displayed
-on the screen.
-Xlib provides functions that you can use to manipulate a colormap.
-The X protocol defines colors using values in the RGB color space.
-The RGB color space is device-dependent;
-rendering an RGB value on differing output devices typically results
-in different colors.
-Xlib also provides a means for clients to specify color using
-device-independent color spaces for consistent results across devices.
-Xlib supports device-independent color spaces derivable from the CIE XYZ
-color space.
-This includes the CIE XYZ, xyY, L*u*v*, and L*a*b* color spaces as well as
-the TekHVC color space.
 
-<P>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 示例代码 </a></li>
+<li><a href="#sec-2">2 生成库 </a></li>
+<li><a href="#sec-3">3 使用动态库 </a></li>
+</ul>
+</div>
+</div>
 
-This chapter discusses how to:
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> 示例代码 </h2>
+<div class="outline-text-2" id="text-1">
 
-<UL>
+<ul>
+<li>
+hello.h
 
-<P><LI>
-<A HREF="colormap.html">Create, copy, and destroy a colormap</A>
+</li>
+</ul>
 
-<P><LI>
-<A HREF="strings/">Specify colors by name or value</A>
 
-<P><LI>
-<A HREF="cell.html">Allocate, modify, and free color cells</A>
+<pre class="src src-c"><span style="color: #ff6347; font-weight: bold;">#if</span><span style="color: #ff6347; font-weight: bold;">n</span><span style="color: #ff6347; font-weight: bold;">def</span> _HELLO_H
+<span style="color: #ff6347; font-weight: bold;">#define</span> <span style="color: #bebebe; font-weight: bold;">_HELLO_H</span>
+<span style="color: #9ac0cd;">int</span> <span style="color: #1e90ff; font-weight: bold;">print</span>();
+<span style="color: #ff6347; font-weight: bold;">#endif</span>
+</pre>
 
-<P><LI>
-<A HREF="modifying-and-querying-cells.html">Read entries in a colormap</A>
 
-<P><LI>
-<A HREF="converting-between-color-spaces.html">Convert between color spaces</A>
 
-<P><LI>
-<A HREF="callback/">Control aspects of color conversion</A>
+<ul>
+<li>
+hello.c
 
-<P><LI>
-<A HREF="gamut-querying/">Query the color gamut of a screen</A>
+</li>
+</ul>
 
-<P><LI>
-<A HREF="management-extensions/">Add new color spaces</A>
 
-</UL>
+<pre class="src src-c"><span style="color: #ff6347; font-weight: bold;">#include</span> <span style="color: #ff0000;">&lt;stdio.h&gt;</span>
+<span style="color: #9ac0cd;">int</span> <span style="color: #1e90ff; font-weight: bold;">print</span>()
+{
+    printf(<span style="color: #ff0000;">"hello world\n"</span>);
+    <span style="color: #40e0d0; font-weight: bold;">return</span> 0;
+}
+</pre>
 
-<P>
 
-All functions, types, and symbols in this chapter with the prefix ``Xcms''
-are defined in
-<B><TT>&lt;X11/Xcms.h&gt;.</TT></B>
-The remaining functions and types are defined in
-<B><TT>&lt;X11/Xlib.h&gt;.</TT></B>
 
-<A NAME="colormap"></A>
-<P>
+<ul>
+<li>
+main.c
 
-Functions in this chapter manipulate the representation of color on the
-screen.
-For each possible value that a pixel can take in a window,
-there is a color cell in the colormap.
-For example, 
-if a window is four bits deep, pixel values 0 through 15 are defined. 
-A colormap is a collection of color cells.
-A color cell consists of a triple of red, green, and blue values.
-The hardware imposes limits on the number of significant
-bits in these values.
-As each pixel is read out of display memory, the pixel
-is looked up in a colormap.
-The RGB value of the cell determines what color is displayed on the screen.
-On a grayscale display with a black-and-white monitor, 
-the values are combined to determine the brightness on the screen.
+</li>
+</ul>
 
-<P>
 
-Typically, an application allocates color cells or sets of color cells
-to obtain the desired colors.
-The client can allocate read-only cells.
-In which case, 
-the pixel values for these colors can be shared among multiple applications, 
-and the RGB value of the cell cannot be changed.
-If the client allocates read/write cells,
-they are exclusively owned by the client,
-and the color associated with the pixel value can be changed at will.
-Cells must be allocated (and, if read/write, initialized with an RGB value)
-by a client to obtain desired colors.
-The use of pixel value for an
-unallocated cell results in an undefined color.
+<pre class="src src-c"><span style="color: #ff6347; font-weight: bold;">#include</span> <span style="color: #ff0000;">"hello.h"</span>
+<span style="color: #9ac0cd;">int</span> <span style="color: #1e90ff; font-weight: bold;">main</span>(<span style="color: #9ac0cd;">void</span>)
+{
+    print();
+    <span style="color: #40e0d0; font-weight: bold;">return</span> 0;
+}
+</pre>
 
-<P>
 
-Because colormaps are associated with windows, X supports displays
-with multiple colormaps and, indeed, different types of colormaps.
-If there are insufficient colormap resources in the display,
-some windows will display in their true colors, and others
-will display with incorrect colors.
-A window manager usually controls which windows are displayed
-in their true colors if more than one colormap is required for
-the color resources the applications are using.
-At any time, there is a set of installed colormaps for a screen.
-Windows using one of the installed colormaps display with true colors, and
-windows using other colormaps generally display with incorrect colors.
-You can control the set of installed colormaps by using
-<B><A HREF="../window-and-session-manager/XInstallColormap.html">XInstallColormap()</A></B>
-and
-<B><A HREF="../window-and-session-manager/XUninstallColormap.html">XUninstallColormap()</A></B>.
 
-<P>
+</div>
 
-Colormaps are local to a particular screen.
-Screens always have a default colormap,
-and programs typically allocate cells out of this colormap.
-Generally, you should not write applications that monopolize 
-color resources.
-Although some hardware supports multiple colormaps installed at one time,
-many of the hardware displays
-built today support only a single installed colormap, so the primitives
-are written to encourage sharing of colormap entries between applications.
+</div>
 
-<P>
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> 生成库 </h2>
+<div class="outline-text-2" id="text-2">
 
-The 
-<B><A HREF="../display/display-macros.html#DefaultColormap">DefaultColormap()</A></B>
-macro returns the default colormap.
-The 
-<B><A HREF="../display/display-macros.html#DefaultVisual">DefaultVisual()</A></B>
-macro
-returns the default visual type for the specified screen.
+<ul>
+<li>
+生成动态库
 
-<!.IN "Color map">
+</li>
+</ul>
 
-Possible visual types are 
-<B><A HREF="../window/visual-types.html">StaticGray</A></B> , 
-<B><A HREF="../window/visual-types.html">GrayScale</A></B> , 
-<B><A HREF="../window/visual-types.html">StaticColor</A></B> ,
-<B><A HREF="../window/visual-types.html">PseudoColor</A></B> , 
-<B><A HREF="../window/visual-types.html">TrueColor</A></B> , 
-or 
-<B><A HREF="../window/visual-types.html">DirectColor</A></B> 
-(see "<A HREF="../window/visual-types.html">Visual Types</A>").
 
-<H5 ALIGN=right><I>Next: <A HREF="structures.html">Color Structures</A></I></H5>
+<pre class="example">gcc -shared -o libhello.so hello.c
+gcc main.c -L. -lhello -Ihello -o main
+export LD_LIBRARY_PATH=$PWD
+./main
+</pre>
 
-<HR><ADDRESS><A HREF="http://tronche.com/">Christophe Tronche</A>, <A HREF="mailto:ch.tronche@computer.org">ch.tronche@computer.org</A></ADDRESS>
-</BODY>
-</HTML>
+
+
+<p>
+*　生成静态库
+</p>
+
+
+<pre class="example">gcc -c hello.c
+ar rs libhello.a hello.o
+gcc main.c -L. -lhello -Ihello -o main
+</pre>
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> 使用动态库 </h2>
+<div class="outline-text-2" id="text-3">
+
+<p>gcc test.c -g -L. -lhello -Ihello -o test -rdynamic -s -ldl
+</p>
+
+
+<pre class="src src-c"><span style="color: #ff6347; font-weight: bold;">#include</span> <span style="color: #ff0000;">"hello.h"</span>
+<span style="color: #ff6347; font-weight: bold;">#include</span> <span style="color: #ff0000;">&lt;dlfcn.h&gt;</span>
+<span style="color: #ff6347; font-weight: bold;">#include</span> <span style="color: #ff0000;">&lt;stdio.h&gt;</span>
+
+<span style="color: #9ac0cd;">int</span> <span style="color: #1e90ff; font-weight: bold;">main</span>(<span style="color: #9ac0cd;">void</span>)
+{
+    <span style="color: #9ac0cd;">void</span> *<span style="color: #bebebe; font-weight: bold;">dp</span>;
+    <span style="color: #9ac0cd;">int</span> (*<span style="color: #bebebe; font-weight: bold;">myprint</span>)();
+    <span style="color: #9ac0cd;">char</span> *<span style="color: #bebebe; font-weight: bold;">error</span>;
+    
+    dp = dlopen(<span style="color: #ff0000;">"./libhello.so"</span>, RTLD_LAZY);
+    <span style="color: #40e0d0; font-weight: bold;">if</span> (!dp)
+    {
+        printf(<span style="color: #ff0000;">"open wrong!\n"</span>);
+    }
+    
+    myprint = dlsym(dp, <span style="color: #ff0000;">"print"</span>);
+    error = dlerror();
+    <span style="color: #40e0d0; font-weight: bold;">if</span> (error)
+    {
+        printf(<span style="color: #ff0000;">"dlsm error!\n"</span>);
+    }
+    myprint();
+    <span style="color: #40e0d0; font-weight: bold;">return</span> 0;
+}
+</pre>
+
+
+
+</div>
+</div>
+<div id="postamble">
+<p class="author"> Author: ecbtnrt
+<a href="mailto:ecbtnrt@liangheng">&lt;ecbtnrt@liangheng&gt;</a>
+</p>
+<p class="date"> Date: 2011-06-24 16:02:26 CST</p>
+<p class="creator">HTML generated by org-mode 6.33x in emacs 23</p>
+</div>
+</div>
+</body>
+</html>
